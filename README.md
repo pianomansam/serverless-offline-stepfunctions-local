@@ -3,7 +3,7 @@
 
 ## Overview
 
-This [Serverless Offline](https://www.npmjs.com/package/serverless-offline) plugin starts a local AWS Step Functions emulator with [stepfunctions-local](https://www.npmjs.com/package/stepfunctions-local). It is meant to be used with [serverless-offline-stepfunctions](https://github.com/pianomansam/serverless-offline-stepfunctions), which creates creates state machines from [serverless-step-functions](https://www.npmjs.com/package/serverless-step-functions) definitions in `serverless.yml`. 
+This [Serverless Offline](https://www.npmjs.com/package/serverless-offline) plugin starts a local AWS Step Functions emulator with [stepfunctions-local](https://www.npmjs.com/package/stepfunctions-local). It is meant to be used with [serverless-offline-stepfunctions](https://github.com/pianomansam/serverless-offline-stepfunctions), which creates state machines from [serverless-step-functions](https://www.npmjs.com/package/serverless-step-functions) definitions in `serverless.yml`. 
 
 
 
