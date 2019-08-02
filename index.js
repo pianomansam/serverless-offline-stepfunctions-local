@@ -1,3 +1,4 @@
+const AWS = require('aws-sdk');
 const stepFunctionsLocal = require('stepfunctions-local');
 
 class ServerlessPlugin {
@@ -19,6 +20,14 @@ class ServerlessPlugin {
   }
 
   async startHandler() {
+    process.env.AWS_ACCESS_KEY_ID =
+      process.env.AWS_ACCESS_KEY_ID ||
+      (AWS.config.credentials && AWS.config.credentials.accessKeyId) ||
+      'fake';
+    process.env.AWS_SECRET_ACCESS_KEY =
+      process.env.AWS_SECRET_ACCESS_KEY ||
+      (AWS.config.credentials && AWS.config.credentials.secretAccessKey) ||
+      'fake';
     this.startStepFunctionsLocal();
   }
 
