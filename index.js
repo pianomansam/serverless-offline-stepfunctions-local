@@ -1,3 +1,4 @@
+const path = require('path');
 const AWS = require('aws-sdk');
 const stepFunctionsLocal = require('stepfunctions-local');
 
@@ -7,8 +8,6 @@ class ServerlessPlugin {
     this.options = options;
     this.provider = this.serverless.getProvider('aws');
     this.region = this.provider.getRegion();
-    this.serverlessHost = this.options.host || 'localhost';
-    this.serverlessPort = this.options.port || 3000;
     this.serverlessLog = serverless.cli.log.bind(serverless.cli);
     this.stepFunctionsLocal = stepFunctionsLocal;
 
@@ -20,6 +19,8 @@ class ServerlessPlugin {
   }
 
   async startHandler() {
+    await this.yamlParse();
+
     process.env.AWS_ACCESS_KEY_ID =
       process.env.AWS_ACCESS_KEY_ID ||
       (AWS.config.credentials && AWS.config.credentials.accessKeyId) ||
@@ -28,6 +29,12 @@ class ServerlessPlugin {
       process.env.AWS_SECRET_ACCESS_KEY ||
       (AWS.config.credentials && AWS.config.credentials.secretAccessKey) ||
       'fake';
+
+    this.serverlessHost = this.options.host || 'localhost';
+    this.serverlessPort =
+      this.options.port ||
+      this.serverless.service.custom['serverless-offline'].port ||
+      3000;
     this.startStepFunctionsLocal();
   }
 
@@ -50,6 +57,55 @@ class ServerlessPlugin {
     if (this.startServer) {
       this.stepFunctionsLocal.stop();
     }
+  }
+
+  yamlParse() {
+    const { servicePath } = this.serverless.config;
+    if (!servicePath) {
+      return Promise.resolve();
+    }
+
+    const serverlessYmlPath = path.join(servicePath, 'serverless.yml');
+    return this.serverless.yamlParser
+      .parse(serverlessYmlPath)
+      .then(serverlessFileParam =>
+        this.serverless.variables
+          .populateObject(serverlessFileParam)
+          .then(parsedObject => {
+            this.serverless.service.stepFunctions = {};
+            this.serverless.service.stepFunctions.stateMachines =
+              parsedObject.stepFunctions &&
+              parsedObject.stepFunctions.stateMachines
+                ? parsedObject.stepFunctions.stateMachines
+                : {};
+            this.serverless.service.stepFunctions.activities =
+              parsedObject.stepFunctions &&
+              parsedObject.stepFunctions.activities
+                ? parsedObject.stepFunctions.activities
+                : [];
+
+            if (!this.serverless.pluginManager.cliOptions.stage) {
+              this.serverless.pluginManager.cliOptions.stage =
+                this.options.stage ||
+                (this.serverless.service.provider &&
+                  this.serverless.service.provider.stage) ||
+                'dev';
+            }
+
+            if (!this.serverless.pluginManager.cliOptions.region) {
+              this.serverless.pluginManager.cliOptions.region =
+                this.options.region ||
+                (this.serverless.service.provider &&
+                  this.serverless.service.provider.region) ||
+                'us-east-1';
+            }
+
+            this.serverless.variables.populateService(
+              this.serverless.pluginManager.cliOptions,
+            );
+            return Promise.resolve();
+          }),
+      );
   }
 }
 
