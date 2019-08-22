@@ -30,7 +30,11 @@ class ServerlessPlugin {
       (AWS.config.credentials && AWS.config.credentials.secretAccessKey) ||
       'fake';
 
-    this.serverlessHost = this.options.host || 'localhost';
+    this.serverlessHost =
+      this.options.host ||
+      this.serverless.service.custom['serverless-offline'].host ||
+      'localhost';
+
     this.serverlessPort =
       this.options.port ||
       this.serverless.service.custom['serverless-offline'].port ||
