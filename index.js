@@ -32,12 +32,14 @@ class ServerlessPlugin {
 
     this.serverlessHost =
       this.options.host ||
-      this.serverless.service.custom['serverless-offline'].host ||
+      (this.serverless.service.custom['serverless-offline'] &&
+        this.serverless.service.custom['serverless-offline'].host) ||
       'localhost';
 
     this.serverlessPort =
       this.options.port ||
-      this.serverless.service.custom['serverless-offline'].port ||
+      (this.serverless.service.custom['serverless-offline'] &&
+        this.serverless.service.custom['serverless-offline'].port) ||
       3000;
     this.startStepFunctionsLocal();
   }
