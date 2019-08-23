@@ -1,7 +1,7 @@
 {
   "name": "serverless-offline-stepfunctions-local",
   "description": "This Serverless Offline plugin starts a local AWS Step Functions emulator with stepfunctions-local",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "index.js",
   "repository": "git@github.com:pianomansam/serverless-offline-stepfunctions-local.git",
   "author": "Samuel Oltz <***REMOVED***>",
